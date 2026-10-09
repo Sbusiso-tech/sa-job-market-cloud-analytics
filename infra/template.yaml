@@ -677,9 +677,8 @@ Resources:
     Properties:
       CachePolicyConfig:
         Name: !Sub "${AWS::StackName}-api-private"
-        Comment: >
-          Signed-in/admin API - never cached (origin sends no-store). Authorization is in the key so CloudFront
-          forwards it on GET requests too.
+        # Authorization is in the cache key so CloudFront forwards it on GET requests too.
+        Comment: Signed-in/admin API - never cached (origin sends no-store).
         MinTTL: 0
         DefaultTTL: 0
         MaxTTL: 1
