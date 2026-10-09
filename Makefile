@@ -67,6 +67,9 @@ deploy: build
 	@if [ -z "$(ADMIN_EMAIL)" ]; then echo "ADMIN_EMAIL is required: make deploy ADMIN_EMAIL=you@example.com"; exit 1; fi
 	sam deploy $(SAM_CONFIG) --stack-name $(STACK) --region $(AWS_REGION) \
 		--parameter-overrides AdminEmail=$(ADMIN_EMAIL) ScheduleEnabled=$(SCHEDULE_ENABLED) CreateBudget=$(CREATE_BUDGET)
+	dist_id="$$($(call stack_output,DistributionId))"
+	aws cloudfront create-invalidation --distribution-id "$$dist_id" --paths "/api/public/*" \
+		--query "Invalidation.Id" --output text
 
 outputs:
 	aws cloudformation describe-stacks --stack-name $(STACK) --region $(AWS_REGION) \
