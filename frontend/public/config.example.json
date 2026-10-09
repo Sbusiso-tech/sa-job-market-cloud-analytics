@@ -1,0 +1,7 @@
+{
+  "apiBaseUrl": "/api",
+  "region": "eu-west-1",
+  "userPoolId": "",
+  "userPoolClientId": "",
+  "useMocks": true
+}
