@@ -37,8 +37,8 @@ def handler(event: dict[str, Any], context: Any = None) -> dict[str, Any]:
     final_failures: Counter = Counter()
     enriched: list[tuple[str, str, dict[str, Any]]] = []
 
-    for record in event.get("Records", []):
-        message_id = record["messageId"]
+    records = {record["messageId"]: record for record in event.get("Records", [])}
+    for message_id, record in records.items():
         try:
             body = json.loads(record["body"])
             job = enrich(Job.from_dict(body["job"]))
@@ -49,7 +49,7 @@ def handler(event: dict[str, Any], context: Any = None) -> dict[str, Any]:
         except (KeyError, TypeError, ValueError) as exc:
             log.warning("bad message %s: %s", message_id, exc)
             failures.append({"itemIdentifier": message_id})
-            if int(record.get("attributes", {}).get("ApproximateReceiveCount", "1")) >= _max_receives():
+            if _is_last_attempt(record):
                 final_failures[_execution_of(record)] += 1
 
     if enriched:
@@ -64,22 +64,35 @@ def handler(event: dict[str, Any], context: Any = None) -> dict[str, Any]:
         )
 
     new_jobs: Counter = Counter()
+    processed: Counter = Counter()
     for message_id, execution_id, curated in enriched:
         try:
             if repo.put_job_if_new(Repository.job_item(curated, now)):
                 new_jobs[execution_id] += 1
             else:
                 repo.touch_job(curated["job_id"], now)
+            processed[execution_id] += 1
         except Exception:
             log.exception("failed to store job %s", curated.get("job_id"))
             failures.append({"itemIdentifier": message_id})
+            if _is_last_attempt(records[message_id]):
+                final_failures[execution_id] += 1
 
-    for execution_id in set(new_jobs) | set(final_failures):
+    for execution_id in set(new_jobs) | set(final_failures) | set(processed):
         if execution_id:
-            repo.add_run_counts(execution_id, new_jobs=new_jobs[execution_id], failed=final_failures[execution_id])
+            repo.add_run_counts(
+                execution_id,
+                new_jobs=new_jobs[execution_id],
+                failed=final_failures[execution_id],
+                processed=processed[execution_id],
+            )
 
     log.info("processed=%d new=%d failed=%d", len(enriched), sum(new_jobs.values()), len(failures))
     return {"batchItemFailures": failures}
+
+
+def _is_last_attempt(record: dict[str, Any]) -> bool:
+    return int(record.get("attributes", {}).get("ApproximateReceiveCount", "1")) >= _max_receives()
 
 
 def _execution_of(record: dict[str, Any]) -> str:

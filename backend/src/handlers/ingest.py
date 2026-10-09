@@ -110,6 +110,7 @@ def handler(event: dict[str, Any], context: Any = None) -> dict[str, Any]:
     repo = Repository(aws.table())
     repo.start_run(execution_id, fetched=len(results), source=source, started_at=format_datetime(now))
     queued = _send_messages(os.environ["QUEUE_URL"], bodies)
+    repo.set_run_queued(execution_id, queued)
     summary = {
         "execution_id": execution_id,
         "source": source,

@@ -55,6 +55,7 @@
         "FunctionName": "${PipelineStatusFnArn}",
         "Payload": {
           "action": "check_queue",
+          "execution_id.$": "$$.Execution.Name",
           "polls.$": "$.poll.polls"
         }
       },

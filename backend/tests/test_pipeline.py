@@ -145,6 +145,22 @@ def test_process_reports_storage_failures(cloud, monkeypatch):
     monkeypatch.setattr(Repository, "put_job_if_new", broken)
     result = process.handler(sqs_event([{"MessageId": "m1", "Body": body}]))
     assert result["batchItemFailures"] == [{"itemIdentifier": "m1"}]
+    assert Repository(cloud.table).get_run("e") is None
+
+    last_try = {"MessageId": "m1", "Body": body, "Attributes": {"ApproximateReceiveCount": "3"}}
+    process.handler(sqs_event([last_try]))
+    run = Repository(cloud.table).get_run("e")
+    assert (run["failed"], run.get("processed", 0)) == (1, 0)
+
+
+def test_process_counts_processed_jobs_per_execution(cloud):
+    jobs = [make_job(source_id=str(i)) for i in range(3)]
+    messages = [{"MessageId": f"m{i}", "Body": json.dumps({"execution_id": "exec-p", "job": j.to_dict()})}
+                for i, j in enumerate(jobs)]
+    process.handler(sqs_event(messages))
+    process.handler(sqs_event(messages[:1]))  # a replayed job still counts as processed
+    run = Repository(cloud.table).get_run("exec-p")
+    assert (run["processed"], run["new_jobs"]) == (4, 3)
 
 
 def _put_curated(cloud, day, name, rows):
@@ -247,6 +263,27 @@ def test_pipeline_status_check_queue_and_mark(cloud):
         pipeline_status.handler({"action": "mark", "execution_id": "x", "status": "WEIRD"})
     with pytest.raises(ValueError):
         pipeline_status.handler({"action": "dance"})
+
+
+def test_check_queue_uses_run_counts_not_lagging_queue_metrics(cloud):
+    repo = Repository(cloud.table)
+    repo.start_run("exec-7", fetched=120, source="adzuna", started_at="2026-10-09T05:00:00Z")
+    repo.set_run_queued("exec-7", 100)
+    repo.add_run_counts("exec-7", processed=60, new_jobs=40)
+    repo.add_run_counts("exec-7", failed=5)
+
+    # The SQS queue is empty here, but 35 of the run's jobs are still unprocessed.
+    assert pipeline_status.handler({"action": "check_queue", "polls": 1, "execution_id": "exec-7"})["pending"] == 35
+
+    repo.add_run_counts("exec-7", processed=35)
+    assert pipeline_status.check_queue(2, "exec-7")["pending"] == 0
+
+
+def test_check_queue_falls_back_to_sqs_when_run_has_no_queued_count(cloud):
+    Repository(cloud.table).start_run("exec-8", fetched=1, source="sample", started_at="2026-10-09T05:00:00Z")
+    cloud.sqs.send_message(QueueUrl=cloud.queue_url, MessageBody="x")
+    assert pipeline_status.check_queue(0, "exec-8")["pending"] == 1
+    assert pipeline_status.check_queue(0, "unknown-run")["pending"] == 1
 
 
 def test_wait_seconds_grow_with_backlog(cloud, monkeypatch):

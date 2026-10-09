@@ -268,13 +268,22 @@ class Repository:
             },
         )
 
-    def add_run_counts(self, execution_id: str, *, new_jobs: int = 0, failed: int = 0) -> None:
-        if not new_jobs and not failed:
+    def set_run_queued(self, execution_id: str, queued: int) -> None:
+        self.table.update_item(
+            Key=run_key(execution_id),
+            UpdateExpression="SET #queued = :queued",
+            ExpressionAttributeNames={"#queued": "queued"},
+            ExpressionAttributeValues={":queued": queued},
+        )
+
+    def add_run_counts(self, execution_id: str, *, new_jobs: int = 0, failed: int = 0, processed: int = 0) -> None:
+        if not new_jobs and not failed and not processed:
             return
         self.table.update_item(
             Key=run_key(execution_id),
-            UpdateExpression="ADD new_jobs :new, failed :failed",
-            ExpressionAttributeValues={":new": new_jobs, ":failed": failed},
+            UpdateExpression="ADD new_jobs :new, failed :failed, #processed :processed",
+            ExpressionAttributeNames={"#processed": "processed"},
+            ExpressionAttributeValues={":new": new_jobs, ":failed": failed, ":processed": processed},
         )
 
     def finish_run(self, execution_id: str, status: str, now: datetime, error: str | None = None) -> dict[str, Any]:
