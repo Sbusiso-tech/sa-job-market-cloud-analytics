@@ -196,6 +196,14 @@ CITY_TO_PROVINCE = {
 }
 
 _REMOTE = re.compile(r"\b(?:remote|work from home|wfh|home[- ]based|anywhere)\b", re.IGNORECASE)
+_REMOTE_ROLE = re.compile(
+    r"\b(?:fully remote|remote[- ]first|(?:role|position|job) is remote|work(?:ing)? remotely"
+    r"|remote (?:role|position|job|contract|opportunity))\b",
+    re.IGNORECASE,
+)
+_LOCATION_LABEL = re.compile(
+    r"\b(?:location|based in|located in|work location|office)\s*[:\-\u2013]\s*([^\n.|;]{2,80})", re.IGNORECASE
+)
 _COUNTRY = {"south africa", "za", "rsa", "suid-afrika"}
 
 
@@ -242,13 +250,27 @@ def _city_from(location: str | None, area: list[str]) -> str | None:
     return None
 
 
+def _from_text(title: str | None, description: str | None) -> tuple[str | None, bool]:
+    """Province and remote hints from the title or a ``Location: ...`` line, for country-level postings."""
+    province = _match(title) if title else None
+    label = _LOCATION_LABEL.search(description or "")
+    if province is None and label:
+        province = _match(label.group(1))
+    is_remote = bool(label and _REMOTE.search(label.group(1))) or bool(_REMOTE_ROLE.search(description or ""))
+    return province, is_remote
+
+
 def resolve_location(
-    location: str | None, area: Iterable[str] | None = None, title: str | None = None
+    location: str | None,
+    area: Iterable[str] | None = None,
+    title: str | None = None,
+    description: str | None = None,
 ) -> tuple[str, str | None, bool]:
     """Return ``(province, city, is_remote)``.
 
     Adzuna's ``area`` list (``["South Africa", "Gauteng", "Johannesburg", "Sandton"]``) wins when it names a
-    province; otherwise the most specific known city/suburb/metro in the area or display name decides.
+    province; otherwise the most specific known city/suburb/metro in the area or display name decides. Postings
+    listed only as "South Africa" fall back to the title, then a location line in the description.
     """
     area_list = [a for a in (area or []) if isinstance(a, str) and a.strip()]
     is_remote = bool(_REMOTE.search(location or "")) or bool(_REMOTE.search(title or ""))
@@ -263,6 +285,9 @@ def resolve_location(
             province = _match(candidate) if candidate else None
             if province:
                 break
+    if province is None:
+        province, remote_hint = _from_text(title, description)
+        is_remote = is_remote or remote_hint
     city = _city_from(location, area_list)
     if province is None:
         province = REMOTE if is_remote else UNKNOWN

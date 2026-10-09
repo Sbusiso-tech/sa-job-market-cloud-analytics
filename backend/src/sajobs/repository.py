@@ -183,16 +183,24 @@ class Repository:
             raise
         return True
 
-    def touch_job(self, job_id: str, now: datetime) -> None:
-        """Push the TTL of an already known job 60 days past ``now`` (it was seen again)."""
+    def touch_job(self, item: dict[str, Any], now: datetime) -> None:
+        """Push the TTL of an already known job 60 days past ``now`` (it was seen again) and refresh its
+        location fields from ``item`` (a fresh ``job_item``) so improved province rules reach stored jobs."""
         self.table.update_item(
-            Key=job_key(job_id),
-            UpdateExpression="SET #ttl = :ttl, last_seen = :now",
+            Key={"PK": item["PK"], "SK": item["SK"]},
+            UpdateExpression=(
+                "SET #ttl = :ttl, last_seen = :now, province = :province, GSI1PK = :gsi1pk, "
+                "city = :city, is_remote = :remote"
+            ),
             ConditionExpression="attribute_exists(PK)",
             ExpressionAttributeNames={"#ttl": "ttl"},
             ExpressionAttributeValues={
                 ":ttl": int((now + timedelta(days=JOB_TTL_DAYS)).timestamp()),
                 ":now": format_datetime(now),
+                ":province": item["province"],
+                ":gsi1pk": item["GSI1PK"],
+                ":city": item.get("city"),
+                ":remote": bool(item.get("is_remote")),
             },
         )
 

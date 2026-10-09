@@ -280,7 +280,7 @@ def enrich(job: Job) -> Job:
     salary, predicted = _salary(job, description)
     exp_min, exp_max = extract_experience(description, job.experience_months)
     tags = [*job.tags, *([job.category] if job.category else [])]
-    province, city, is_remote = resolve_location(job.location, job.location_area, job.title)
+    province, city, is_remote = resolve_location(job.location, job.location_area, job.title, description)
     low = to_annual_zar(salary["salary_min"], salary["salary_period"], salary["salary_currency"])
     high = to_annual_zar(salary["salary_max"], salary["salary_period"], salary["salary_currency"])
     if low is None or high is None:

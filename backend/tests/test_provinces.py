@@ -52,6 +52,26 @@ def test_remote_title_keeps_real_province():
     assert resolve_location("Cape Town", [], title="Remote Data Engineer") == ("Western Cape", "Cape Town", True)
 
 
+@pytest.mark.parametrize(
+    ("title", "description", "expected"),
+    [
+        ("Associate Accountant Cape Town (Remote)", "", ("Western Cape", None, True)),
+        ("Developer", "Great team. Location: Gqeberha, South Africa Start Date: ASAP", ("Eastern Cape", None, False)),
+        ("Developer", "Location: Remote / Cape Town, South Africa", ("Western Cape", None, True)),
+        ("Analyst", "Working Model: Fully remote, based anywhere in South Africa", ("Remote", None, True)),
+        ("Technician", "Provide on-site and remote support in our offices", ("Unknown", None, False)),
+        ("Engineer", "We have offices in Johannesburg and Durban", ("Unknown", None, False)),
+    ],
+)
+def test_country_level_postings_use_title_then_location_line(title, description, expected):
+    assert resolve_location("South Africa", ["South Africa"], title, description) == expected
+
+
+def test_description_never_overrides_listed_area():
+    result = resolve_location("Sandton", ["South Africa", "Gauteng"], "Dev", "Location: Cape Town")
+    assert result == ("Gauteng", "Sandton", False)
+
+
 def test_unknown_city_kept_as_city():
     assert resolve_location("Smallville", []) == ("Unknown", "Smallville", False)
 

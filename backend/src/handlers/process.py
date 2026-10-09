@@ -67,10 +67,11 @@ def handler(event: dict[str, Any], context: Any = None) -> dict[str, Any]:
     processed: Counter = Counter()
     for message_id, execution_id, curated in enriched:
         try:
-            if repo.put_job_if_new(Repository.job_item(curated, now)):
+            item = Repository.job_item(curated, now)
+            if repo.put_job_if_new(item):
                 new_jobs[execution_id] += 1
             else:
-                repo.touch_job(curated["job_id"], now)
+                repo.touch_job(item, now)
             processed[execution_id] += 1
         except Exception:
             log.exception("failed to store job %s", curated.get("job_id"))

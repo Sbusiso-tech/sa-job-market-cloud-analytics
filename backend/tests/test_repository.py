@@ -49,9 +49,14 @@ def test_put_if_new_touch_and_counts(cloud):
     assert repo.put_job_if_new(item) is True
     assert repo.put_job_if_new(item) is False
     later = datetime(2026, 11, 1, tzinfo=UTC)
-    repo.touch_job(item["job_id"], later)
+    relocated = {**item, "province": "Western Cape", "GSI1PK": "PROV#Western Cape", "city": None, "is_remote": True}
+    repo.touch_job(relocated, later)
     stored = cloud.table.get_item(Key={"PK": item["PK"], "SK": "META"})["Item"]
     assert stored["ttl"] == int(later.timestamp()) + 60 * 86400
+    assert (stored["province"], stored["GSI1PK"], stored["city"], stored["is_remote"]) == (
+        "Western Cape", "PROV#Western Cape", None, True
+    )
+    assert stored["first_seen"] == item["first_seen"]
 
     repo.start_run("run-1", fetched=5, source="sample", started_at="2026-10-09T05:00:00Z")
     repo.add_run_counts("run-1", new_jobs=2)
