@@ -76,7 +76,7 @@ Design choices:
 | Service | Free allowance | Our expected use |
 |---|---|---|
 | Lambda | 1M requests + 400k GB-s / month (always free) | well under 10k requests |
-| DynamoDB | 25 GB, 25 RCU, 25 WCU provisioned (always free) | under 50 MB, **15 RCU / 15 WCU total** |
+| DynamoDB | 25 GB, 25 RCU, 25 WCU provisioned (always free) | under 50 MB, **20 RCU / 20 WCU total** |
 | DynamoDB Streams | Reads by Lambda triggers are free | — |
 | SQS | 1M requests / month (always free) | ~30k |
 | SNS | 1,000 email deliveries / month (always free) | under 200 |
@@ -122,7 +122,7 @@ mode, DynamoDB auto scaling (it creates CloudWatch alarms), X-Ray, WAF, SES outs
   `cloud engineer`, `devops`, `cyber security`, `business analyst`, `IT support`.
 - Keys are stored as SSM SecureString parameters `/sa-jobmarket/adzuna/app_id` and `.../app_key`,
   created once by hand (never committed, never in CloudFormation plain text).
-- Offline mode: `backend/sample_data/adzuna_za_sample.json` lets tests and demos run without keys.
+- Offline mode: `backend/src/sajobs/sample_data/adzuna_za_sample.json` lets tests and demos run without keys.
 
 ## 6. Data processing (ported from the existing platform)
 
@@ -147,14 +147,14 @@ Statistics computed by the Aggregate Lambda (last 30 days of curated data):
 
 ## 7. DynamoDB design (single table `sa-jobmarket`)
 
-Provisioned capacity: table **10 RCU / 10 WCU**, GSI1 **5 RCU / 5 WCU**: 15/15 total, inside
-the 25/25 free allowance. Writes are spread out by the SQS trigger's
+Provisioned capacity: table **10 RCU / 10 WCU**, GSI1 and GSI2 **5 RCU / 5 WCU** each: 20/20
+total, inside the 25/25 free allowance. Writes are spread out by the SQS trigger's
 `MaximumConcurrency: 2` and retries with backoff on throttling.
 
 | Entity | PK | SK | GSI1PK / GSI1SK | Notes |
 |---|---|---|---|---|
-| Job | `JOB#<job_id>` | `META` | `PROV#<province>` / `<date_posted>#<job_id>` | title, company, location, skills, salary, url, `ttl` |
-| Stats | `STATS#LATEST` | `OVERVIEW` \| `SKILLS` \| `SALARIES` \| `PROVINCES` \| `PAIRS` | — | JSON blobs, each < 400 KB |
+| Job | `JOB#<job_id>` | `META` | `PROV#<province>` / `<date_posted>#<job_id>` | also `GSI2PK = JOBS`, `GSI2SK = <date_posted>#<job_id>` for the newest-first list of all jobs; title, company, location, skills, salary, url, `ttl` |
+| Stats | `STATS#LATEST` | `OVERVIEW` \| `SKILLS` \| `SALARIES` \| `PROVINCES` \| `PAIRS` \| `TRENDS` | — | JSON blobs, each < 400 KB |
 | Weekly snapshot | `STATS#<yyyy-Www>` | `SKILLS` | — | for trend lines |
 | User profile | `USER#<sub>` | `PROFILE` | — | email, SNS subscription ARN, created_at |
 | Saved job | `USER#<sub>` | `SAVED#<job_id>` | — | copy of title/company for fast listing |
@@ -167,20 +167,25 @@ Stream: `NEW_IMAGE`, with a Lambda **event filter** so the matcher only sees `IN
 
 ## 8. API (HTTP API, all routes under `/api`)
 
+Exact request and response shapes are in [`docs/api-contract.md`](docs/api-contract.md).
+
 | Method & path | Auth | Purpose |
 |---|---|---|
-| `GET /api/public/overview` | none | headline numbers |
-| `GET /api/public/skills` | none | top skills + weekly trend |
+| `GET /api/public/overview` | none | headline numbers, seniority and employment-type breakdowns |
+| `GET /api/public/skills` | none | top skills + weekly change |
+| `GET /api/public/skill-list` | none | every known skill, for pickers |
 | `GET /api/public/salaries?skill=` | none | ZAR salary ranges |
 | `GET /api/public/provinces` | none | jobs and top skills per province |
-| `GET /api/public/jobs?province=&skill=&cursor=` | none | latest jobs (GSI1 by province, paginated) |
-| `GET /api/public/jobs/{jobId}` | none | one job |
+| `GET /api/public/skill-pairs` | none | most common skill combinations |
+| `GET /api/public/trends` | none | weekly snapshots (up to 12 weeks) |
+| `GET /api/public/jobs?province=&skill=&cursor=` | none | latest jobs (GSI1 by province or GSI2 for all, paginated) |
+| `GET /api/public/jobs/{job_id}` | none | one job |
 | `GET /api/me/saved-jobs` | user | list saved jobs |
-| `PUT /api/me/saved-jobs/{jobId}` | user | save a job |
-| `DELETE /api/me/saved-jobs/{jobId}` | user | unsave |
+| `PUT /api/me/saved-jobs/{job_id}` | user | save a job |
+| `DELETE /api/me/saved-jobs/{job_id}` | user | unsave |
 | `GET /api/me/alerts` | user | list alerts |
 | `POST /api/me/alerts` | user | create alert (skills, province); subscribes email to SNS on first alert |
-| `DELETE /api/me/alerts/{alertId}` | user | delete alert |
+| `DELETE /api/me/alerts/{alert_id}` | user | delete alert |
 | `DELETE /api/me` | user | delete all my data and SNS subscription (POPIA-friendly) |
 | `POST /api/admin/runs` | admin | start the pipeline now |
 | `GET /api/admin/runs` | admin | recent runs, counts, DLQ depth |
@@ -206,6 +211,10 @@ Stream: `NEW_IMAGE`, with a Lambda **event filter** so the matcher only sees `IN
 - **S3:** Block Public Access on, SSE-S3 encryption, bucket policy denies non-TLS requests; the web
   bucket can only be read by the CloudFront distribution (OAC).
 - **CloudFront:** HTTPS redirect, security headers response policy (HSTS, CSP, X-Frame-Options).
+  The web app gets a custom policy with a strict CSP (`script-src 'self'`, `connect-src` limited to the
+  site and the region's Cognito endpoint); the API behaviours keep the managed SecurityHeadersPolicy.
+  After each aggregate, `AggregateFn` invalidates `/api/public/*` (one path per run, inside the 1,000 free
+  invalidation paths a month); its role may only call `cloudfront:CreateInvalidation` on this distribution.
 - **Cognito:** email as username, verified email, strong password policy, `admins` group,
   short-lived access tokens (1 h), SRP sign-in from the web app (no client secret in the browser).
 - **IAM:** one role per function, scoped to exact resources and actions. For example `MeApiFn`
@@ -226,30 +235,36 @@ Stream: `NEW_IMAGE`, with a Lambda **event filter** so the matcher only sees `IN
 .
 ├── PLAN.md
 ├── README.md                     portfolio README (architecture, screenshots, how to run)
-├── Makefile                      test, build, deploy, destroy, seed-secrets, frontend-deploy
+├── Makefile                      venv, test, lint, demo, build, deploy, outputs, run-pipeline, seed-secrets,
+│                                 frontend-install/-build/-deploy, destroy
 ├── .github/workflows/ci.yml      lint, test, build; deploy on main
 ├── backend/
-│   ├── src/sajobs/
-│   │   ├── models.py             Job dataclass
-│   │   ├── adzuna.py             Adzuna client (urllib, rate-limited)
-│   │   ├── transform.py          cleaning, salary, experience, seniority
-│   │   ├── skills.py             skill extraction
-│   │   ├── skills_taxonomy.json
-│   │   ├── provinces.py          location → province
-│   │   ├── aggregate.py          statistics
-│   │   ├── repository.py         DynamoDB access (all key patterns live here)
-│   │   └── http.py               API response/validation helpers
-│   ├── handlers/
-│   │   ├── ingest.py  process.py  aggregate.py  alert_matcher.py
-│   │   └── api_public.py  api_me.py  api_admin.py
-│   ├── sample_data/adzuna_za_sample.json
-│   ├── tests/                    pytest + moto (DynamoDB, S3, SQS, SNS mocked)
-│   └── requirements-dev.txt      pytest, moto, boto3, ruff
+│   ├── src/                      Lambda CodeUri for every function (stdlib + boto3 only)
+│   │   ├── sajobs/
+│   │   │   ├── models.py         Job dataclass
+│   │   │   ├── adzuna.py         Adzuna client (urllib, paced, retries, 40-call cap) + sample loader
+│   │   │   ├── transform.py      cleaning, ZAR salary, experience, seniority, enrich()
+│   │   │   ├── skills.py         skill extraction
+│   │   │   ├── skills_taxonomy.json
+│   │   │   ├── provinces.py      location → province
+│   │   │   ├── aggregate.py      statistics (pure functions)
+│   │   │   ├── repository.py     DynamoDB access (all key patterns live here)
+│   │   │   ├── http.py           API response/validation/claims helpers
+│   │   │   ├── aws.py            cached boto3 clients
+│   │   │   └── sample_data/adzuna_za_sample.json   36 fake Adzuna-shaped SA jobs
+│   │   └── handlers/
+│   │       ├── ingest.py  process.py  aggregate.py  alert_matcher.py
+│   │       ├── pipeline_status.py   Step Functions helper (queue depth, mark run)
+│   │       └── api_public.py  api_me.py  api_admin.py
+│   ├── scripts/                  demo_offline.py, empty_bucket.py (used by make destroy)
+│   ├── tests/                    pytest + moto (DynamoDB, S3, SQS, SNS, SSM, Step Functions mocked)
+│   ├── pyproject.toml            pytest + ruff config
+│   └── requirements-dev.txt      pytest, pytest-cov, moto, boto3, ruff, cfn-lint
 ├── infra/
 │   ├── template.yaml             main SAM stack (everything in section 3)
 │   ├── statemachine/pipeline.asl.json
 │   ├── bootstrap/github-oidc.yaml  one-off: OIDC provider + deploy role
-│   └── samconfig.toml
+│   └── samconfig.toml            stack name, region, capabilities, tags (nothing personal)
 ├── frontend/
 │   ├── src/ pages: Dashboard, Jobs, JobDetail, Saved, Alerts, Admin, SignIn, SignUp
 │   ├── public/config.json        written at deploy time (user pool id, client id)
@@ -278,27 +293,30 @@ Each phase ends with something that can be demonstrated. Tick items off as they 
 - **Done when:** `aws sts get-caller-identity` and `sam --version` work.
 
 ### Phase 1: Core library, offline (2 days)
-- [ ] Port models, Adzuna client, transform, skills from the old project; remove third-party deps.
-- [ ] Add SA skills, ZAR salary handling and `provinces.py`.
-- [ ] `aggregate.py` producing all statistics from a list of jobs.
-- [ ] Unit tests with the sample data (target ≥ 85% coverage of `sajobs`).
+- [x] Port models, Adzuna client, transform, skills from the old project; remove third-party deps.
+- [x] Add SA skills, ZAR salary handling and `provinces.py`.
+- [x] `aggregate.py` producing all statistics from a list of jobs.
+- [x] Unit tests with the sample data (target ≥ 85% coverage of `sajobs`).
 - **Done when:** `make test` passes and a script prints SA top skills from the sample file.
 
+Phases 2–4 below are written, unit-tested with moto, and pass `sam validate --lint` and `sam build`.
+Their live "Done when" checks need the first `make deploy`.
+
 ### Phase 2: Data pipeline on AWS (3 days)
-- [ ] SAM: S3 data bucket (lifecycle, encryption), SQS + DLQ, DynamoDB table + GSI1 + stream + TTL.
-- [ ] Ingest, Process and Aggregate Lambdas; Step Functions state machine; daily EventBridge schedule.
-- [ ] Ops SNS topic + CloudWatch alarms; log retention 7 days.
+- [x] SAM: S3 data bucket (lifecycle, encryption), SQS + DLQ, DynamoDB table + GSI1 + stream + TTL.
+- [x] Ingest, Process and Aggregate Lambdas; Step Functions state machine; daily EventBridge schedule.
+- [x] Ops SNS topic + CloudWatch alarms; log retention 7 days.
 - **Done when:** a manual execution fills DynamoDB with SA jobs and `STATS#LATEST` items.
 
 ### Phase 3: Public API + CloudFront (2 days)
-- [ ] HTTP API, `PublicApiFn`, throttling.
-- [ ] Web bucket + CloudFront with `/api/*` behaviour (cached public routes, uncached others).
+- [x] HTTP API, `PublicApiFn`, throttling.
+- [x] Web bucket + CloudFront with `/api/*` behaviour (cached public routes, uncached others).
 - **Done when:** `https://<id>.cloudfront.net/api/public/skills` returns live data.
 
 ### Phase 4: Auth, saved jobs, alerts, notifications (3 days)
-- [ ] Cognito user pool (Lite), app client, `admins` group, JWT authorizer.
-- [ ] `MeApiFn` (saved jobs, alerts, delete account) and `AdminApiFn` (start/list runs).
-- [ ] `job-alerts` topic, subscription with filter policy, Alert Matcher on the stream.
+- [x] Cognito user pool (Lite), app client, `admins` group, JWT authorizer.
+- [x] `MeApiFn` (saved jobs, alerts, delete account) and `AdminApiFn` (start/list runs).
+- [x] `job-alerts` topic, subscription with filter policy, Alert Matcher on the stream.
 - **Done when:** a test user creates an alert, a pipeline run inserts a matching job, and the
   user receives one digest email.
 

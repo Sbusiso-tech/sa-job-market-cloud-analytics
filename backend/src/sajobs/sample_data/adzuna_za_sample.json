@@ -1,0 +1,1004 @@
+{
+ "_comment": "FAKE sample data shaped like Adzuna /jobs/za/search results. Companies and jobs are invented.",
+ "count": 36,
+ "mean": 0,
+ "results": [
+  {
+   "id": "4810000000",
+   "title": "Senior Data Engineer",
+   "description": "<p>Join our data platform team. 5+ years building pipelines with <b>Python</b>, SQL and Apache Spark on AWS. Experience with Airflow, dbt and Kafka is a bonus.</p>",
+   "company": {
+    "display_name": "Acme Bank"
+   },
+   "location": {
+    "display_name": "Sandton, Johannesburg",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Johannesburg",
+     "Sandton"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-08T09:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810000000?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 720000,
+   "salary_max": 900000
+  },
+  {
+   "id": "4810007919",
+   "title": "Data Engineer",
+   "description": "<p>Build ETL pipelines in Azure Data Factory and Databricks. Strong SQL and Python. 3-5 years experience.</p>",
+   "company": {
+    "display_name": "Ubuntu Insurance"
+   },
+   "location": {
+    "display_name": "Johannesburg, Gauteng",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Johannesburg"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-07T15:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810007919?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 480000,
+   "salary_max": 620000
+  },
+  {
+   "id": "4810015838",
+   "title": "Junior Data Analyst",
+   "description": "<p>Graduate role. Excel, SQL and Power BI dashboards. Salary: R18 000 - R22 000 per month.</p>",
+   "company": {
+    "display_name": "Karoo Retail Group"
+   },
+   "location": {
+    "display_name": "Cape Town, Western Cape",
+    "area": [
+     "South Africa",
+     "Western Cape",
+     "Cape Town"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-06T21:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810015838?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job"
+  },
+  {
+   "id": "4810023757",
+   "title": "Data Analyst",
+   "description": "<p>Analyse customer churn with SQL, Python and Power BI. 2 years of experience required.</p>",
+   "company": {
+    "display_name": "Protea Telecoms"
+   },
+   "location": {
+    "display_name": "Midrand, Gauteng",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Midrand"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-06T03:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810023757?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 380000,
+   "salary_max": 450000
+  },
+  {
+   "id": "4810031676",
+   "title": "Intermediate Software Developer (C#)",
+   "description": "<p>.NET Core, C#, SQL Server and Azure DevOps. 3+ years experience. R45 000 per month CTC.</p>",
+   "company": {
+    "display_name": "Highveld Systems"
+   },
+   "location": {
+    "display_name": "Centurion, Gauteng",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Centurion"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-05T09:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810031676?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job"
+  },
+  {
+   "id": "4810039595",
+   "title": "Senior Java Developer",
+   "description": "<p>Spring Boot microservices on Kubernetes and AWS. Kafka, PostgreSQL, CI/CD with GitHub Actions. Minimum of 6 years experience.</p>",
+   "company": {
+    "display_name": "Table Mountain Fintech"
+   },
+   "location": {
+    "display_name": "Century City, Cape Town",
+    "area": [
+     "South Africa",
+     "Western Cape",
+     "Cape Town",
+     "Century City"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-06T22:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810039595?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 850000,
+   "salary_max": 1100000
+  },
+  {
+   "id": "4810047514",
+   "title": "Cloud Engineer (AWS)",
+   "description": "<p>Terraform, AWS Lambda, Amazon S3, Docker and Linux. AWS certification advantageous.</p>",
+   "company": {
+    "display_name": "Jacaranda Cloud"
+   },
+   "location": {
+    "display_name": "Pretoria, Gauteng",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Pretoria"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-06T04:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810047514?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 600000,
+   "salary_max": 780000
+  },
+  {
+   "id": "4810055433",
+   "title": "DevOps Engineer",
+   "description": "<p>Own our CI/CD with Jenkins and GitLab CI. Docker, Kubernetes, Ansible and Azure. 4 years experience.</p>",
+   "company": {
+    "display_name": "Umhlanga Digital"
+   },
+   "location": {
+    "display_name": "Umhlanga, Durban",
+    "area": [
+     "South Africa",
+     "KwaZulu-Natal",
+     "Durban",
+     "Umhlanga"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-05T10:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810055433?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 540000,
+   "salary_max": 700000
+  },
+  {
+   "id": "4810063352",
+   "title": "Cyber Security Analyst",
+   "description": "<p>SOC analyst role. Linux, networking, CompTIA Security+ and CCNA preferred. ITIL awareness.</p>",
+   "company": {
+    "display_name": "Shield SA"
+   },
+   "location": {
+    "display_name": "Rosebank, Johannesburg",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Johannesburg",
+     "Rosebank"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-04T16:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810063352?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 500000,
+   "salary_max": 650000
+  },
+  {
+   "id": "4810071271",
+   "title": "IT Support Technician",
+   "description": "<p>Desktop support, Active Directory and Microsoft 365. CompTIA A+ an advantage. R15 000 - R18 000 pm.</p>",
+   "company": {
+    "display_name": "Bloem Business Solutions"
+   },
+   "location": {
+    "display_name": "Bloemfontein, Free State",
+    "area": [
+     "South Africa",
+     "Free State",
+     "Bloemfontein"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-03T22:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810071271?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job"
+  },
+  {
+   "id": "4810079190",
+   "title": "Business Analyst",
+   "description": "<p>Agile business analyst working with Jira, SQL and Excel. 3-5 years experience.</p>",
+   "company": {
+    "display_name": "Garden Route Mutual"
+   },
+   "location": {
+    "display_name": "Bellville, Cape Town",
+    "area": [
+     "South Africa",
+     "Western Cape",
+     "Cape Town",
+     "Bellville"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-05T11:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810079190?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 450000,
+   "salary_max": 600000
+  },
+  {
+   "id": "4810087109",
+   "title": "SAP ABAP Developer",
+   "description": "<p>12-month contract. SAP ABAP, SAP S/4HANA migration and Fiori. 5+ years SAP experience.</p>",
+   "company": {
+    "display_name": "Rand Mining Group"
+   },
+   "location": {
+    "display_name": "Johannesburg, Gauteng",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Johannesburg"
+    ]
+   },
+   "contract_time": "contract",
+   "contract_type": "contract",
+   "created": "2026-10-04T17:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810087109?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 700000,
+   "salary_max": 950000
+  },
+  {
+   "id": "4810095028",
+   "title": "SAP FICO Consultant",
+   "description": "<p>Support the SAP finance modules. Excel and SQL. R450k p.a.</p>",
+   "company": {
+    "display_name": "Platinum Resources"
+   },
+   "location": {
+    "display_name": "Rustenburg, North West",
+    "area": [
+     "South Africa",
+     "North West",
+     "Rustenburg"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-03T23:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810095028?utm_source=sample",
+   "category": {
+    "label": "Accounting & Finance Jobs",
+    "tag": "accounting-finance-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job"
+  },
+  {
+   "id": "4810102947",
+   "title": "Payroll Administrator (Sage Pastel)",
+   "description": "<p>Run monthly payroll on Sage Pastel Payroll. Advanced Excel. R 25,000 - R 30,000 pm.</p>",
+   "company": {
+    "display_name": "Lowveld Agri"
+   },
+   "location": {
+    "display_name": "Mbombela, Mpumalanga",
+    "area": [
+     "South Africa",
+     "Mpumalanga",
+     "Mbombela"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-03T05:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810102947?utm_source=sample",
+   "category": {
+    "label": "Accounting & Finance Jobs",
+    "tag": "accounting-finance-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job"
+  },
+  {
+   "id": "4810110866",
+   "title": "ERP Consultant (Syspro)",
+   "description": "<p>Implement and support Syspro ERP. SQL Server reporting and Excel.</p>",
+   "company": {
+    "display_name": "Durban Manufacturing Co"
+   },
+   "location": {
+    "display_name": "Durban, KwaZulu-Natal",
+    "area": [
+     "South Africa",
+     "KwaZulu-Natal",
+     "Durban"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-02T11:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810110866?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 420000,
+   "salary_max": 520000
+  },
+  {
+   "id": "4810118785",
+   "title": "Salesforce Developer",
+   "description": "<p>Apex, Lightning and Salesforce integrations with REST APIs. JavaScript a plus.</p>",
+   "company": {
+    "display_name": "Fynbos Software"
+   },
+   "location": {
+    "display_name": "Stellenbosch, Western Cape",
+    "area": [
+     "South Africa",
+     "Western Cape",
+     "Stellenbosch"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-04T00:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810118785?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 650000,
+   "salary_max": 820000
+  },
+  {
+   "id": "4810126704",
+   "title": "Power BI Developer",
+   "description": "<p>Build Power BI reports with DAX on a SQL Server data warehouse. Data modelling skills.</p>",
+   "company": {
+    "display_name": "Limpopo Health Trust"
+   },
+   "location": {
+    "display_name": "Polokwane, Limpopo",
+    "area": [
+     "South Africa",
+     "Limpopo",
+     "Polokwane"
+    ]
+   },
+   "contract_time": "contract",
+   "contract_type": "contract",
+   "created": "2026-10-03T06:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810126704?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 400000,
+   "salary_max": 500000
+  },
+  {
+   "id": "4810134623",
+   "title": "Dynamics 365 Functional Consultant",
+   "description": "<p>Dynamics 365 Finance and Operations. Excel and Power BI.</p>",
+   "company": {
+    "display_name": "Cape Digital Partners"
+   },
+   "location": {
+    "display_name": "Cape Town, Western Cape",
+    "area": [
+     "South Africa",
+     "Western Cape",
+     "Cape Town"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-02T12:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810134623?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 600000,
+   "salary_max": 750000
+  },
+  {
+   "id": "4810142542",
+   "title": "ServiceNow Developer",
+   "description": "<p>ServiceNow ITSM development with JavaScript. ITIL v4 certified.</p>",
+   "company": {
+    "display_name": "Gauteng Shared Services"
+   },
+   "location": {
+    "display_name": "Midrand, Gauteng",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Midrand"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-01T18:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810142542?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 620000,
+   "salary_max": 760000
+  },
+  {
+   "id": "4810150461",
+   "title": "Pega Developer",
+   "description": "<p>Pega PRPC case management. Java and SQL. 4+ years Pega experience.</p>",
+   "company": {
+    "display_name": "Kudu Financial"
+   },
+   "location": {
+    "display_name": "Sandton, Johannesburg",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Johannesburg",
+     "Sandton"
+    ]
+   },
+   "contract_time": "contract",
+   "contract_type": "contract",
+   "created": "2026-10-01T00:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810150461?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 750000,
+   "salary_max": 900000
+  },
+  {
+   "id": "4810158380",
+   "title": "Network Engineer",
+   "description": "<p>Cisco routing and switching, CCNA required. Linux and network monitoring.</p>",
+   "company": {
+    "display_name": "Coastal Connect"
+   },
+   "location": {
+    "display_name": "Gqeberha, Eastern Cape",
+    "area": [
+     "South Africa",
+     "Eastern Cape",
+     "Gqeberha"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-02T13:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810158380?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 380000,
+   "salary_max": 480000
+  },
+  {
+   "id": "4810166299",
+   "title": "Python Developer",
+   "description": "<p>Fully remote within South Africa. Python, Django, PostgreSQL, Docker and AWS.</p>",
+   "company": {
+    "display_name": "Remote First Labs"
+   },
+   "location": {
+    "display_name": "Remote, South Africa",
+    "area": [
+     "South Africa"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-01T19:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810166299?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 600000,
+   "salary_max": 840000
+  },
+  {
+   "id": "4810174218",
+   "title": "Full Stack Developer (React/Node.js)",
+   "description": "<p>React, TypeScript and Node.js with MongoDB. R35 000 per month.</p>",
+   "company": {
+    "display_name": "Isipho Tech"
+   },
+   "location": {
+    "display_name": "Randburg, Johannesburg",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Johannesburg",
+     "Randburg"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-01T01:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810174218?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job"
+  },
+  {
+   "id": "4810182137",
+   "title": "Graduate Software Developer Learnership",
+   "description": "<p>12 month learnership. Learn Python, SQL, Git and HTML.</p>",
+   "company": {
+    "display_name": "Sizwe Academy"
+   },
+   "location": {
+    "display_name": "Kempton Park, Ekurhuleni",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Ekurhuleni",
+     "Kempton Park"
+    ]
+   },
+   "contract_time": "part_time",
+   "contract_type": "contract",
+   "created": "2026-09-30T07:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810182137?utm_source=sample",
+   "category": {
+    "label": "Graduate Jobs",
+    "tag": "graduate-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job"
+  },
+  {
+   "id": "4810190056",
+   "title": "Lead Data Scientist",
+   "description": "<p>Lead a team building machine learning models with Python, scikit-learn, PyTorch and AWS. 8+ years experience.</p>",
+   "company": {
+    "display_name": "Springbok Analytics"
+   },
+   "location": {
+    "display_name": "Cape Town, Western Cape",
+    "area": [
+     "South Africa",
+     "Western Cape",
+     "Cape Town"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-09-29T13:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810190056?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 1100000,
+   "salary_max": 1400000
+  },
+  {
+   "id": "4810197975",
+   "title": "Data Engineer (Azure)",
+   "description": "<p>Azure Synapse, Azure Data Factory, Python and SQL. Data warehousing.</p>",
+   "company": {
+    "display_name": "Nguni Logistics"
+   },
+   "location": {
+    "display_name": "Pietermaritzburg, KwaZulu-Natal",
+    "area": [
+     "South Africa",
+     "KwaZulu-Natal",
+     "Pietermaritzburg"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-10-01T02:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810197975?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 500000,
+   "salary_max": 640000
+  },
+  {
+   "id": "4810205894",
+   "title": "Cloud Support Engineer",
+   "description": "<p>Support Microsoft Azure workloads. Linux, Bash and PowerShell scripting.</p>",
+   "company": {
+    "display_name": "Kimberley Diamonds IT"
+   },
+   "location": {
+    "display_name": "Kimberley, Northern Cape",
+    "area": [
+     "South Africa",
+     "Northern Cape",
+     "Kimberley"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-09-30T08:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810205894?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 300000,
+   "salary_max": 380000
+  },
+  {
+   "id": "4810213813",
+   "title": "Senior Business Analyst",
+   "description": "<p>Senior BA. Agile, Scrum, Jira and SQL. Minimum 5 years experience.</p>",
+   "company": {
+    "display_name": "Eastern Cape Water"
+   },
+   "location": {
+    "display_name": "East London, Eastern Cape",
+    "area": [
+     "South Africa",
+     "Eastern Cape",
+     "East London"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-09-29T14:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810213813?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 550000,
+   "salary_max": 700000
+  },
+  {
+   "id": "4810221732",
+   "title": "Software Engineer (Go)",
+   "description": "<p>Golang microservices, PostgreSQL, Redis, Kubernetes and GCP.</p>",
+   "company": {
+    "display_name": "Baobab Payments"
+   },
+   "location": {
+    "display_name": "Sandton, Johannesburg",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Johannesburg",
+     "Sandton"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-09-28T20:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810221732?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 780000,
+   "salary_max": 980000
+  },
+  {
+   "id": "4810229651",
+   "title": "Data Analyst (SQL, Python)",
+   "description": "<p>Report on energy data with SQL, Python and Tableau. Salary R30 000 - R38 000 per month.</p>",
+   "company": {
+    "display_name": "Vaal Energy"
+   },
+   "location": {
+    "display_name": "Pretoria, Gauteng",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Pretoria"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-09-28T02:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810229651?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job"
+  },
+  {
+   "id": "4810237570",
+   "title": "DevOps Engineer (Contract)",
+   "description": "<p>6 month contract. AWS, Terraform, Docker, Kubernetes and Python. CI/CD pipelines.</p>",
+   "company": {
+    "display_name": "Cape Cloudworks"
+   },
+   "location": {
+    "display_name": "Century City, Cape Town",
+    "area": [
+     "South Africa",
+     "Western Cape",
+     "Cape Town",
+     "Century City"
+    ]
+   },
+   "contract_time": "contract",
+   "contract_type": "contract",
+   "created": "2026-09-29T15:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810237570?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 900000,
+   "salary_max": 1050000
+  },
+  {
+   "id": "4810245489",
+   "title": "IT Support Intern",
+   "description": "<p>Internship for IT graduates. Windows, networking basics and ITIL.</p>",
+   "company": {
+    "display_name": "Durban University Partners"
+   },
+   "location": {
+    "display_name": "Durban, KwaZulu-Natal",
+    "area": [
+     "South Africa",
+     "KwaZulu-Natal",
+     "Durban"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "contract",
+   "created": "2026-09-28T21:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810245489?utm_source=sample",
+   "category": {
+    "label": "Graduate Jobs",
+    "tag": "graduate-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job"
+  },
+  {
+   "id": "4810253408",
+   "title": "Cyber Security Engineer",
+   "description": "<p>Azure security, Linux hardening, Python scripting. CompTIA Security+.</p>",
+   "company": {
+    "display_name": "Iron Shield Defence"
+   },
+   "location": {
+    "display_name": "Centurion, Gauteng",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Centurion"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-09-28T03:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810253408?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 800000,
+   "salary_max": 1000000
+  },
+  {
+   "id": "4810261327",
+   "title": "Remote Data Engineer",
+   "description": "<p>Work from home. Python, SQL, Snowflake, dbt and Airflow. 3+ years experience.</p>",
+   "company": {
+    "display_name": "Kalahari Data"
+   },
+   "location": {
+    "display_name": "South Africa",
+    "area": [
+     "South Africa"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-09-27T09:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810261327?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 700000,
+   "salary_max": 880000
+  },
+  {
+   "id": "4810269246",
+   "title": "Software Developer",
+   "description": "<p>C# and .NET developer. SQL Server, Angular and REST APIs. 2 years experience.</p>",
+   "company": {
+    "display_name": "Midlands Medical Systems"
+   },
+   "location": {
+    "display_name": "Pietermaritzburg, KwaZulu-Natal",
+    "area": [
+     "South Africa",
+     "KwaZulu-Natal",
+     "Pietermaritzburg"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-09-26T15:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810269246?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "1",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 360000,
+   "salary_max": 460000
+  },
+  {
+   "id": "4810277165",
+   "title": "Senior Cloud Engineer (Azure)",
+   "description": "<p>Azure, Terraform, Kubernetes, Python and Azure DevOps. 7+ years experience.</p>",
+   "company": {
+    "display_name": "Sandton Capital"
+   },
+   "location": {
+    "display_name": "Sandton, Johannesburg",
+    "area": [
+     "South Africa",
+     "Gauteng",
+     "Johannesburg",
+     "Sandton"
+    ]
+   },
+   "contract_time": "full_time",
+   "contract_type": "permanent",
+   "created": "2026-09-28T04:00:00Z",
+   "redirect_url": "https://www.adzuna.co.za/details/4810277165?utm_source=sample",
+   "category": {
+    "label": "IT Jobs",
+    "tag": "it-jobs"
+   },
+   "salary_is_predicted": "0",
+   "__CLASS__": "Adzuna::API::Response::Job",
+   "salary_min": 900000,
+   "salary_max": 1200000
+  }
+ ]
+}

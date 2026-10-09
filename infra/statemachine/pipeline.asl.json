@@ -1,0 +1,201 @@
+{
+  "Comment": "SA job market daily pipeline: ingest -> wait for the SQS queue to drain -> aggregate. Any failure marks the run FAILED and emails the ops topic. Poll waits grow with the backlog (20-120 s) to keep state transitions low.",
+  "StartAt": "Ingest",
+  "States": {
+    "Ingest": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${IngestFnArn}",
+        "Payload": {
+          "execution_id.$": "$$.Execution.Name",
+          "input.$": "$"
+        }
+      },
+      "ResultSelector": {
+        "fetched.$": "$.Payload.fetched",
+        "queued.$": "$.Payload.queued",
+        "source.$": "$.Payload.source",
+        "pending.$": "$.Payload.queued",
+        "polls": 0,
+        "wait_seconds": 20
+      },
+      "ResultPath": "$.poll",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 5,
+          "MaxAttempts": 2,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "ResultPath": "$.error",
+          "Next": "MarkFailed"
+        }
+      ],
+      "Next": "WaitForQueue"
+    },
+    "WaitForQueue": {
+      "Type": "Wait",
+      "SecondsPath": "$.poll.wait_seconds",
+      "Next": "CheckQueue"
+    },
+    "CheckQueue": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${PipelineStatusFnArn}",
+        "Payload": {
+          "action": "check_queue",
+          "polls.$": "$.poll.polls"
+        }
+      },
+      "ResultSelector": {
+        "pending.$": "$.Payload.pending",
+        "polls.$": "$.Payload.polls",
+        "wait_seconds.$": "$.Payload.wait_seconds"
+      },
+      "ResultPath": "$.poll",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 5,
+          "MaxAttempts": 2,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "ResultPath": "$.error",
+          "Next": "MarkFailed"
+        }
+      ],
+      "Next": "QueueDrained"
+    },
+    "QueueDrained": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.poll.pending",
+          "NumericEquals": 0,
+          "Next": "Aggregate"
+        },
+        {
+          "Variable": "$.poll.polls",
+          "NumericGreaterThanEquals": 30,
+          "Next": "Aggregate"
+        }
+      ],
+      "Default": "WaitForQueue"
+    },
+    "Aggregate": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${AggregateFnArn}",
+        "Payload": {
+          "execution_id.$": "$$.Execution.Name"
+        }
+      },
+      "ResultSelector": {
+        "total_jobs.$": "$.Payload.total_jobs",
+        "week.$": "$.Payload.week"
+      },
+      "ResultPath": "$.aggregate",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 5,
+          "MaxAttempts": 2,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "ResultPath": "$.error",
+          "Next": "MarkFailed"
+        }
+      ],
+      "Next": "MarkSucceeded"
+    },
+    "MarkSucceeded": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${PipelineStatusFnArn}",
+        "Payload": {
+          "action": "mark",
+          "execution_id.$": "$$.Execution.Name",
+          "status": "SUCCEEDED"
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "ResultPath": "$.error",
+          "Next": "NotifyFailure"
+        }
+      ],
+      "End": true
+    },
+    "MarkFailed": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${PipelineStatusFnArn}",
+        "Payload": {
+          "action": "mark",
+          "execution_id.$": "$$.Execution.Name",
+          "status": "FAILED",
+          "error.$": "$.error"
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "ResultPath": "$.mark_error",
+          "Next": "NotifyFailure"
+        }
+      ],
+      "Next": "NotifyFailure"
+    },
+    "NotifyFailure": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${OpsTopicArn}",
+        "Subject": "SA Job Market pipeline failed",
+        "Message.$": "States.Format('Pipeline execution {} failed. Error: {}', $$.Execution.Name, States.JsonToString($.error))"
+      },
+      "ResultPath": null,
+      "Next": "PipelineFailed"
+    },
+    "PipelineFailed": {
+      "Type": "Fail",
+      "Error": "PipelineFailed",
+      "Cause": "A pipeline step failed; see the ops-alerts email and the RUN# item in DynamoDB."
+    }
+  }
+}
