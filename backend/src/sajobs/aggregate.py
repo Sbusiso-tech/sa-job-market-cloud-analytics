@@ -97,7 +97,7 @@ def _breakdown(records: list[dict[str, Any]], key: str, order: tuple[str, ...]) 
 
 def _median_salary(records: Iterable[dict[str, Any]]) -> int | None:
     values = [v for v in (salary_midpoint(r) for r in records) if v is not None]
-    return _round(percentile(values, 50))
+    return _round(percentile(values, 50)) if len(values) >= MIN_SALARY_SAMPLE else None
 
 
 def _top_skills(records: Iterable[dict[str, Any]], limit: int) -> list[dict[str, Any]]:

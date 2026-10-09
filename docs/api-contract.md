@@ -22,7 +22,7 @@ the key is missing.
 
 - Before the first pipeline run: `last_updated` (every stats route), and in the overview `top_skill`,
   `top_province` and `median_salary_zar` are `null`. After a run, the overview's and each province row's
-  `median_salary_zar` are `null` when none of the jobs counted has a salary.
+  `median_salary_zar` are `null` when fewer than 5 of the jobs counted have a salary.
 - `Job`: `company` and `description_snippet` are always strings (`""` when unknown). `city`, `location`,
   `salary_min_zar`, `salary_max_zar`, `experience_years_min`, `experience_years_max`, `date_posted` and
   `url` may be `null`. `province` is `Unknown` rather than `null`; `seniority` and `employment_type` are

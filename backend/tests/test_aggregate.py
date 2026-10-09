@@ -102,6 +102,17 @@ def test_window_weekly_change_and_salary_threshold():
     assert compute_stats(records, NOW)["snapshot"]["total_jobs"] == 6
 
 
+def test_province_median_needs_five_salaries():
+    records = [
+        *[record(f"g{i}", ["SQL"], salary=600_000) for i in range(5)],
+        record("ec", ["SQL"], province="Eastern Cape", salary=62_400),
+        *[record(f"e{i}", ["SQL"], province="Eastern Cape") for i in range(4)],
+    ]
+    provinces = {p["province"]: p for p in compute_stats(records, NOW)["sections"]["PROVINCES"]["provinces"]}
+    assert provinces["Gauteng"]["median_salary_zar"] == 600_000
+    assert provinces["Eastern Cape"]["median_salary_zar"] is None and provinces["Eastern Cape"]["count"] == 5
+
+
 def test_trends_merge_keeps_last_twelve_weeks_oldest_first():
     previous = [{"week": f"2026-W{w:02d}", "total_jobs": w, "top_skills": []} for w in range(25, 41)]
     previous.append({"week": "2026-W41", "total_jobs": 999, "top_skills": []})
