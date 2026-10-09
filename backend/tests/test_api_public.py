@@ -79,6 +79,37 @@ def test_jobs_filtered_by_province_and_skill(cloud):
     assert all(j["province"] == "Western Cape" and "AWS" in j["skills"] for j in both["items"])
 
 
+def test_sparse_skill_filter_fills_pages_and_cursor_skips_nothing(cloud, monkeypatch):
+    monkeypatch.setattr("sajobs.repository.SKILL_FILTER_PAGE", 10)
+    records = []
+    for i in range(60):
+        description = "Kotlin and Python" if i % 7 == 0 else "Excel reporting"
+        records.append(curated(make_job(source_id=str(i), title=f"Role {i}", description=description), NOW))
+    seed_jobs(cloud.table, NOW, records)
+    expected = {r["job_id"] for i, r in enumerate(records) if i % 7 == 0}
+
+    seen, cursor, pages = [], None, 0
+    while True:
+        query = {"skill": "kotlin", "limit": "3", **({"cursor": cursor} if cursor else {})}
+        page = body_of(call("/api/public/jobs", query=query))
+        pages += 1
+        assert len(page["items"]) == 3 or page["next_cursor"] is None
+        seen += [j["job_id"] for j in page["items"]]
+        cursor = page["next_cursor"]
+        if not cursor:
+            break
+    assert len(seen) == len(set(seen)) and set(seen) == expected and pages == 3
+
+
+def test_skill_filter_reads_are_capped(cloud, monkeypatch):
+    monkeypatch.setattr("sajobs.repository.SKILL_FILTER_PAGE", 10)
+    monkeypatch.setattr("sajobs.repository.SKILL_FILTER_MAX_SCANNED", 20)
+    records = [curated(make_job(source_id=str(i), description="Excel"), NOW) for i in range(40)]
+    seed_jobs(cloud.table, NOW, records)
+    page = body_of(call("/api/public/jobs", query={"skill": "Kotlin", "limit": "5"}))
+    assert page["items"] == [] and page["next_cursor"]
+
+
 @pytest.mark.parametrize(
     "query",
     [

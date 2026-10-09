@@ -29,6 +29,8 @@ from sajobs.models import PUBLIC_JOB_FIELDS, format_datetime, parse_datetime
 JOB_TTL_DAYS = 60
 GSI1 = "GSI1"
 GSI2 = "GSI2"
+SKILL_FILTER_PAGE = 100
+SKILL_FILTER_MAX_SCANNED = 300  # bounds one request's reads on the 5-RCU indexes
 META = "META"
 STATS_LATEST = "STATS#LATEST"
 
@@ -216,20 +218,35 @@ class Repository:
     def list_jobs(
         self, province: str | None = None, skill: str | None = None, limit: int = 20, cursor: str | None = None
     ) -> tuple[list[dict[str, Any]], str | None]:
-        index, pk_name, pk_value, _ = self._jobs_index(province)
+        index, pk_name, pk_value, sk_name = self._jobs_index(province)
         start = self.jobs_cursor_start(province, cursor)
         kwargs: dict[str, Any] = {
             "IndexName": index,
             "KeyConditionExpression": Key(pk_name).eq(pk_value),
             "ScanIndexForward": False,
-            "Limit": limit,
+            # DynamoDB applies a filter after Limit, so a skill filter reads bigger pages until it has enough matches.
+            "Limit": SKILL_FILTER_PAGE if skill else limit,
         }
         if skill:
             kwargs["FilterExpression"] = Attr("skills").contains(skill)
-        if start:
-            kwargs["ExclusiveStartKey"] = start
-        response = self.table.query(**kwargs)
-        return [public_job(i) for i in response.get("Items", [])], encode_cursor(response.get("LastEvaluatedKey"))
+        items: list[dict[str, Any]] = []
+        scanned = 0
+        while True:
+            if start:
+                kwargs["ExclusiveStartKey"] = start
+            response = self.table.query(**kwargs)
+            page = response.get("Items", [])
+            start = response.get("LastEvaluatedKey")
+            for position, item in enumerate(page):
+                items.append(item)
+                if len(items) == limit:
+                    if position == len(page) - 1 and not start:
+                        return [public_job(i) for i in items], None
+                    resume = {name: item[name] for name in ("PK", "SK", pk_name, sk_name)}
+                    return [public_job(i) for i in items], encode_cursor(resume)
+            scanned += response.get("ScannedCount", len(page))
+            if not start or scanned >= SKILL_FILTER_MAX_SCANNED:
+                return [public_job(i) for i in items], encode_cursor(start)
 
     # --------------------------------------------------------------- stats
 
