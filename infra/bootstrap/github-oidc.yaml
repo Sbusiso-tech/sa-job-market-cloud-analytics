@@ -1,0 +1,197 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  One-time bootstrap for GitHub Actions deploys of the sa-jobmarket stack. GitHub signs in with
+  short-lived OIDC tokens, so no AWS access keys are stored in GitHub.
+
+# Deploy once by hand with an admin profile: make bootstrap-oidc
+#
+# Two roles keep the CI identity small:
+#   GitHubDeployRole       assumed by GitHub Actions on the main branch only. It can run change sets on the
+#                          app stack, upload build artifacts, publish the web app and invalidate CloudFront.
+#   CloudFormationExecRole assumed only by CloudFormation. It creates the app resources. IAM is limited to
+#                          roles named sa-jobmarket-* with AWS service-role managed policies.
+# Anyone who can push to main can change what gets deployed, so protect the main branch on GitHub.
+
+Parameters:
+  GitHubOwner:
+    Type: String
+    Description: GitHub user or organisation that owns the repository.
+  GitHubRepo:
+    Type: String
+    Description: Repository name.
+  Branch:
+    Type: String
+    Default: main
+    Description: The only branch allowed to deploy.
+  AppStackName:
+    Type: String
+    Default: sa-jobmarket
+  ExistingOidcProviderArn:
+    Type: String
+    Default: ""
+    Description: >-
+      ARN of an existing token.actions.githubusercontent.com provider. An account can only have one,
+      so leave empty to create it here.
+
+Conditions:
+  CreateProvider: !Equals [!Ref ExistingOidcProviderArn, ""]
+
+Resources:
+  GitHubOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: [sts.amazonaws.com]
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+        - 1c58a3a8518e8759bf075b76b750d4f2df264fcd
+      Tags:
+        - Key: project
+          Value: sa-jobmarket
+
+  CloudFormationExecRole:
+    Type: AWS::IAM::Role
+    Properties:
+      # Must not start with "${AppStackName}-", or this role could edit itself.
+      RoleName: !Sub cfn-exec-${AppStackName}
+      Description: Used only by CloudFormation to create and update the sa-jobmarket stack.
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: cloudformation.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/PowerUserAccess
+      Policies:
+        - PolicyName: app-roles-only
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: ManageAppRoles
+                Effect: Allow
+                Action:
+                  - iam:CreateRole
+                  - iam:DeleteRole
+                  - iam:GetRole
+                  - iam:UpdateRole
+                  - iam:UpdateAssumeRolePolicy
+                  - iam:TagRole
+                  - iam:UntagRole
+                  - iam:ListRoleTags
+                  - iam:PutRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:ListRolePolicies
+                  - iam:ListAttachedRolePolicies
+                  - iam:PassRole
+                Resource: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AppStackName}-*
+              - Sid: AttachServiceRolePoliciesOnly
+                Effect: Allow
+                Action:
+                  - iam:AttachRolePolicy
+                  - iam:DetachRolePolicy
+                Resource: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AppStackName}-*
+                Condition:
+                  ArnLike:
+                    iam:PolicyARN: !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/*
+      Tags:
+        - Key: project
+          Value: sa-jobmarket
+
+  GitHubDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub github-deploy-${AppStackName}
+      Description: Assumed by GitHub Actions (main branch only) to deploy sa-jobmarket.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !If
+                - CreateProvider
+                - !Ref GitHubOidcProvider
+                - !Ref ExistingOidcProviderArn
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOwner}/${GitHubRepo}:ref:refs/heads/${Branch}
+      Policies:
+        - PolicyName: deploy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: ChangeSets
+                Effect: Allow
+                Action:
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:DescribeStacks
+                  - cloudformation:DescribeStackEvents
+                  - cloudformation:DescribeStackResource
+                  - cloudformation:DescribeStackResources
+                  - cloudformation:ListStackResources
+                  - cloudformation:GetTemplate
+                Resource:
+                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AppStackName}/*
+                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-sam-cli-managed-default/*
+              - Sid: SamTransform
+                Effect: Allow
+                Action: cloudformation:CreateChangeSet
+                Resource: !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:aws:transform/Serverless-2016-10-31
+              - Sid: TemplateChecks
+                Effect: Allow
+                Action:
+                  - cloudformation:ValidateTemplate
+                  - cloudformation:GetTemplateSummary
+                Resource: "*"
+              - Sid: PassExecRoleToCloudFormationOnly
+                Effect: Allow
+                Action: iam:PassRole
+                Resource: !GetAtt CloudFormationExecRole.Arn
+                Condition:
+                  StringEquals:
+                    iam:PassedToService: cloudformation.amazonaws.com
+              - Sid: SamArtifacts
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                Resource:
+                  - !Sub arn:${AWS::Partition}:s3:::aws-sam-cli-managed-default-samclisourcebucket-*
+                  - !Sub arn:${AWS::Partition}:s3:::aws-sam-cli-managed-default-samclisourcebucket-*/*
+              - Sid: PublishWebApp
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:ListBucket
+                Resource:
+                  - !Sub arn:${AWS::Partition}:s3:::${AppStackName}-webbucket-*
+                  - !Sub arn:${AWS::Partition}:s3:::${AppStackName}-webbucket-*/*
+              - Sid: InvalidateCdn
+                Effect: Allow
+                Action:
+                  - cloudfront:CreateInvalidation
+                  - cloudfront:GetInvalidation
+                Resource: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/*
+      Tags:
+        - Key: project
+          Value: sa-jobmarket
+
+Outputs:
+  GitHubDeployRoleArn:
+    Description: Set as the AWS_DEPLOY_ROLE_ARN repository variable on GitHub.
+    Value: !GetAtt GitHubDeployRole.Arn
+  CloudFormationExecRoleArn:
+    Description: Passed to sam deploy as --role-arn (CFN_ROLE_ARN repository variable on GitHub).
+    Value: !GetAtt CloudFormationExecRole.Arn

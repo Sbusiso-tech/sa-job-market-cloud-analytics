@@ -11,6 +11,9 @@ STACK ?= sa-jobmarket
 SCHEDULE_ENABLED ?= true
 CREATE_BUDGET ?= true
 SAMPLE ?= 0
+GITHUB_OWNER ?= Sbusiso-tech
+GITHUB_REPO ?= sa-job-market-cloud-analytics
+BOOTSTRAP_STACK ?= github-oidc-$(STACK)
 
 ifneq ($(AWS_PROFILE),)
 export AWS_PROFILE
@@ -29,7 +32,7 @@ WEB_DIST := frontend/dist
 stack_output = aws cloudformation describe-stacks --stack-name $(STACK) --region $(AWS_REGION) \
 	--query "Stacks[0].Outputs[?OutputKey=='$(1)'].OutputValue" --output text
 
-.PHONY: help venv test lint demo build deploy outputs run-pipeline seed-secrets \
+.PHONY: help venv test lint demo build deploy outputs run-pipeline seed-secrets bootstrap-oidc \
 	frontend-install frontend-build frontend-deploy destroy clean
 
 help:
@@ -42,6 +45,7 @@ help:
 	@echo "outputs         print stack outputs"
 	@echo "run-pipeline    start a pipeline execution (SAMPLE=1 uses bundled sample data)"
 	@echo "seed-secrets    store Adzuna keys in SSM (ADZUNA_APP_ID=... ADZUNA_APP_KEY=...)"
+	@echo "bootstrap-oidc  one-time: GitHub OIDC provider and deploy roles for GitHub Actions"
 	@echo "frontend-*      install / build / deploy the web app"
 	@echo "destroy         empty both buckets and delete the stack"
 
@@ -56,6 +60,7 @@ test:
 lint:
 	(cd backend && .venv/bin/ruff check src tests scripts)
 	sam validate --lint -t $(TEMPLATE) --region $(AWS_REGION)
+	$(VENV)/bin/cfn-lint infra/bootstrap/github-oidc.yaml
 
 demo:
 	$(PY) backend/scripts/demo_offline.py
@@ -89,6 +94,14 @@ seed-secrets:
 	@aws ssm put-parameter --region $(AWS_REGION) --name /sa-jobmarket/adzuna/app_key --type SecureString \
 		--overwrite --value "$(ADZUNA_APP_KEY)" > /dev/null
 	@echo "Adzuna keys stored in SSM Parameter Store under /sa-jobmarket/adzuna/"
+
+bootstrap-oidc:
+	aws cloudformation deploy --region $(AWS_REGION) --stack-name $(BOOTSTRAP_STACK) \
+		--template-file infra/bootstrap/github-oidc.yaml --capabilities CAPABILITY_NAMED_IAM \
+		--parameter-overrides GitHubOwner=$(GITHUB_OWNER) GitHubRepo=$(GITHUB_REPO) AppStackName=$(STACK) \
+		--tags project=sa-jobmarket
+	aws cloudformation describe-stacks --region $(AWS_REGION) --stack-name $(BOOTSTRAP_STACK) \
+		--query "Stacks[0].Outputs[].[OutputKey,OutputValue]" --output table
 
 frontend-install:
 	npm --prefix frontend ci

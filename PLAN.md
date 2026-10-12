@@ -329,7 +329,7 @@ CloudFront, sign-in and web app are verified live.
 - **Done when:** the whole flow works from the CloudFront URL on desktop and mobile.
 
 ### Phase 6: CI/CD and guardrails (2 days)
-- [ ] `infra/bootstrap/github-oidc.yaml` deployed once.
+- [x] `infra/bootstrap/github-oidc.yaml` deployed once.
 - [ ] `.github/workflows/ci.yml` jobs: `lint` (ruff, eslint) → `test` (pytest, vitest) → `build`
       (sam build, npm build) → `deploy` (main branch only, `sam deploy` + frontend sync).
       GitHub Actions is free for public repos and has 2,000 free minutes/month for private ones.
