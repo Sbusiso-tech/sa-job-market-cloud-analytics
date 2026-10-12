@@ -287,8 +287,8 @@ Each phase ends with something that can be demonstrated. Tick items off as they 
       to the paid plan.
 - [x] Zero-spend budget emailing the account owner.
 - [x] Install AWS CLI v2, SAM CLI, Python 3.12, Node LTS (22+).
-- [x] CLI signed in with `aws login --profile sa-jobmarket` (short-lived credentials, no access keys)
-      for `eu-west-1`.
+- [x] CLI profile `sa-jobmarket` for `eu-west-1`, using an IAM user access key stored only in
+      `~/.aws/credentials` (permissions 600).
 - [x] Adzuna app id/key stored as SSM SecureString parameters under `/sa-jobmarket/adzuna/`.
 - **Done when:** `aws sts get-caller-identity` and `sam --version` work.
 
@@ -299,8 +299,8 @@ Each phase ends with something that can be demonstrated. Tick items off as they 
 - [x] Unit tests with the sample data (target ≥ 85% coverage of `sajobs`).
 - **Done when:** `make test` passes and a script prints SA top skills from the sample file.
 
-Phases 2–4 below are written, unit-tested with moto, and pass `sam validate --lint` and `sam build`.
-Their live "Done when" checks need the first `make deploy`.
+Phases 2–5 are deployed to `eu-west-1` and running on real Adzuna data: the pipeline, public API,
+CloudFront, sign-in and web app are verified live.
 
 ### Phase 2: Data pipeline on AWS (3 days)
 - [x] SAM: S3 data bucket (lifecycle, encryption), SQS + DLQ, DynamoDB table + GSI1 + stream + TTL.
