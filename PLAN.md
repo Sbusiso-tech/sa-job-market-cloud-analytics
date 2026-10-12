@@ -321,11 +321,11 @@ CloudFront, sign-in and web app are verified live.
   user receives one digest email.
 
 ### Phase 5: Web app (4 days)
-- [ ] Vite + React + TypeScript; sign up / sign in / sign out with Cognito (SRP).
-- [ ] Dashboard: overview cards, top-skills bar chart, salary ranges, province map/table, trends.
-- [ ] Jobs list with province/skill filters and pagination; job detail; save button.
-- [ ] Saved jobs, Alerts (create/delete, confirmation hint), Admin page (run now, run history).
-- [ ] Deploy: `npm run build`, write `config.json` from stack outputs, `aws s3 sync`, invalidate `/index.html`.
+- [x] Vite + React + TypeScript; sign up / sign in / sign out with Cognito (SRP).
+- [x] Dashboard: overview cards, top-skills bar chart, salary ranges, province map/table, trends.
+- [x] Jobs list with province/skill filters and pagination; job detail; save button.
+- [x] Saved jobs, Alerts (create/delete, confirmation hint), Admin page (run now, run history).
+- [x] Deploy: `npm run build`, write `config.json` from stack outputs, `aws s3 sync`, invalidate `/index.html`.
 - **Done when:** the whole flow works from the CloudFront URL on desktop and mobile.
 
 ### Phase 6: CI/CD and guardrails (2 days)
