@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: eu-west-1
+  SAM_CLI_TELEMETRY: "0"
+
+jobs:
+  backend:
+    name: Backend lint and tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+      - name: Install
+        run: make venv
+      - name: Ruff
+        run: (cd backend && .venv/bin/ruff check src tests scripts)
+      - name: CloudFormation lint
+        run: backend/.venv/bin/cfn-lint infra/template.yaml infra/bootstrap/github-oidc.yaml
+      - name: Tests (85% coverage minimum)
+        run: make test
+
+  frontend:
+    name: Web app lint, tests and build
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  sam-build:
+    name: SAM build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+      - run: sam build -t infra/template.yaml --config-file "$GITHUB_WORKSPACE/infra/samconfig.toml"

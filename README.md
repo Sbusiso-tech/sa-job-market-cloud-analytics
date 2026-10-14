@@ -1,5 +1,7 @@
 # SA Job Market Cloud Analytics Platform
 
+[![CI](https://github.com/Sbusiso-tech/sa-job-market-cloud-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/Sbusiso-tech/sa-job-market-cloud-analytics/actions/workflows/ci.yml)
+
 A serverless AWS application that tracks which tech skills South African employers are hiring for,
 what they pay (in rands) and where (by province). Signed-in users can save jobs and get email
 alerts for new jobs that match their skills.
