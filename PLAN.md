@@ -336,7 +336,8 @@ CloudFront, sign-in and web app are verified live.
       local run; the first GitHub-hosted run is pending.
       GitHub Actions is free for public repos and has 2,000 free minutes/month for private ones.
 - [ ] $1 monthly budget in IaC (the zero-spend budget already exists); tags everywhere;
-      `make destroy` tested end-to-end.
+      `make destroy` tested end-to-end. Budget, alarms and measured usage are in [`docs/cost.md`](docs/cost.md);
+      `make destroy` is still to be tested.
 - **Done when:** a merge to `main` deploys automatically with no stored AWS keys.
 
 ### Phase 7: Portfolio polish and demo (2 days)
