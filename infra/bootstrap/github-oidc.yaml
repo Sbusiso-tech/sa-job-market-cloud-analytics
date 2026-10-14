@@ -76,7 +76,9 @@ Resources:
                   - iam:DeleteRole
                   - iam:GetRole
                   - iam:UpdateRole
+                  - iam:UpdateRoleDescription
                   - iam:UpdateAssumeRolePolicy
+                  - iam:ListInstanceProfilesForRole
                   - iam:TagRole
                   - iam:UntagRole
                   - iam:ListRoleTags

@@ -15,7 +15,10 @@ GITHUB_OWNER ?= Sbusiso-tech
 GITHUB_REPO ?= sa-job-market-cloud-analytics
 BOOTSTRAP_STACK ?= github-oidc-$(STACK)
 
-ifneq ($(AWS_PROFILE),)
+# AWS_PROFILE= (as in CI, which uses OIDC credentials) must remove the variable: an empty profile breaks the AWS CLI.
+ifeq ($(AWS_PROFILE),)
+unexport AWS_PROFILE
+else
 export AWS_PROFILE
 endif
 export AWS_REGION
@@ -41,7 +44,7 @@ help:
 	@echo "lint            ruff + sam validate --lint"
 	@echo "demo            offline demo on the bundled sample data"
 	@echo "build           sam build"
-	@echo "deploy          sam deploy (requires ADMIN_EMAIL=you@example.com)"
+	@echo "deploy          sam deploy (requires ADMIN_EMAIL=you@example.com; optional CFN_ROLE_ARN=...)"
 	@echo "outputs         print stack outputs"
 	@echo "run-pipeline    start a pipeline execution (SAMPLE=1 uses bundled sample data)"
 	@echo "seed-secrets    store Adzuna keys in SSM (ADZUNA_APP_ID=... ADZUNA_APP_KEY=...)"
@@ -71,6 +74,7 @@ build:
 deploy: build
 	@if [ -z "$(ADMIN_EMAIL)" ]; then echo "ADMIN_EMAIL is required: make deploy ADMIN_EMAIL=you@example.com"; exit 1; fi
 	sam deploy $(SAM_CONFIG) --stack-name $(STACK) --region $(AWS_REGION) \
+		$(if $(CFN_ROLE_ARN),--role-arn $(CFN_ROLE_ARN)) \
 		--parameter-overrides AdminEmail=$(ADMIN_EMAIL) ScheduleEnabled=$(SCHEDULE_ENABLED) CreateBudget=$(CREATE_BUDGET)
 	dist_id="$$($(call stack_output,DistributionId))"
 	aws cloudfront create-invalidation --distribution-id "$$dist_id" --paths "/api/public/*" \

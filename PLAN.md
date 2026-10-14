@@ -330,8 +330,10 @@ CloudFront, sign-in and web app are verified live.
 
 ### Phase 6: CI/CD and guardrails (2 days)
 - [x] `infra/bootstrap/github-oidc.yaml` deployed once.
-- [ ] `.github/workflows/ci.yml` jobs: `lint` (ruff, eslint) → `test` (pytest, vitest) → `build`
+- [x] `.github/workflows/ci.yml` jobs: `lint` (ruff, eslint) → `test` (pytest, vitest) → `build`
       (sam build, npm build) → `deploy` (main branch only, `sam deploy` + frontend sync).
+      The deploy path (environment credentials, CloudFormation execution role) is verified with a
+      local run; the first GitHub-hosted run is pending.
       GitHub Actions is free for public repos and has 2,000 free minutes/month for private ones.
 - [ ] $1 monthly budget in IaC (the zero-spend budget already exists); tags everywhere;
       `make destroy` tested end-to-end.
