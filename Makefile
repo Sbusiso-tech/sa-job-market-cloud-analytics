@@ -13,6 +13,8 @@ CREATE_BUDGET ?= true
 SAMPLE ?= 0
 GITHUB_OWNER ?= Sbusiso-tech
 GITHUB_REPO ?= sa-job-market-cloud-analytics
+GITHUB_OWNER_ID ?= $(shell gh api users/$(GITHUB_OWNER) --jq .id)
+GITHUB_REPO_ID ?= $(shell gh api repos/$(GITHUB_OWNER)/$(GITHUB_REPO) --jq .id)
 BOOTSTRAP_STACK ?= github-oidc-$(STACK)
 
 # AWS_PROFILE= (as in CI, which uses OIDC credentials) must remove the variable: an empty profile breaks the AWS CLI.
@@ -102,7 +104,8 @@ seed-secrets:
 bootstrap-oidc:
 	aws cloudformation deploy --region $(AWS_REGION) --stack-name $(BOOTSTRAP_STACK) \
 		--template-file infra/bootstrap/github-oidc.yaml --capabilities CAPABILITY_NAMED_IAM \
-		--parameter-overrides GitHubOwner=$(GITHUB_OWNER) GitHubRepo=$(GITHUB_REPO) AppStackName=$(STACK) \
+		--parameter-overrides GitHubOwner=$(GITHUB_OWNER) GitHubOwnerId=$(GITHUB_OWNER_ID) \
+		GitHubRepo=$(GITHUB_REPO) GitHubRepoId=$(GITHUB_REPO_ID) AppStackName=$(STACK) \
 		--tags project=sa-jobmarket
 	aws cloudformation describe-stacks --region $(AWS_REGION) --stack-name $(BOOTSTRAP_STACK) \
 		--query "Stacks[0].Outputs[].[OutputKey,OutputValue]" --output table

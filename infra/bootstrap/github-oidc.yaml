@@ -16,9 +16,17 @@ Parameters:
   GitHubOwner:
     Type: String
     Description: GitHub user or organisation that owns the repository.
+  GitHubOwnerId:
+    Type: String
+    AllowedPattern: "[0-9]+"
+    Description: Numeric id of the owner (gh api users/OWNER --jq .id).
   GitHubRepo:
     Type: String
     Description: Repository name.
+  GitHubRepoId:
+    Type: String
+    AllowedPattern: "[0-9]+"
+    Description: Numeric id of the repository (gh api repos/OWNER/REPO --jq .id).
   Branch:
     Type: String
     Default: main
@@ -121,7 +129,8 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOwner}/${GitHubRepo}:ref:refs/heads/${Branch}
+                # GitHub's immutable subject: the numeric ids stop a re-created repo with the same name from deploying.
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOwner}@${GitHubOwnerId}/${GitHubRepo}@${GitHubRepoId}:ref:refs/heads/${Branch}
       Policies:
         - PolicyName: deploy
           PolicyDocument:
