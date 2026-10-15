@@ -270,7 +270,7 @@ Exact request and response shapes are in [`docs/api-contract.md`](docs/api-contr
 │   ├── public/config.json        written at deploy time (user pool id, client id)
 │   └── package.json              React + Vite + TypeScript, Recharts, amazon-cognito-identity-js
 └── docs/
-    ├── architecture.png
+    ├── (architecture diagram: Mermaid, in README.md)
     ├── cost.md                   free-tier usage table + proof (Billing screenshot)
     ├── demo-script.md
     └── retrospective.md
@@ -332,8 +332,7 @@ CloudFront, sign-in and web app are verified live.
 - [x] `infra/bootstrap/github-oidc.yaml` deployed once.
 - [x] `.github/workflows/ci.yml` jobs: `lint` (ruff, eslint) → `test` (pytest, vitest) → `build`
       (sam build, npm build) → `deploy` (main branch only, `sam deploy` + frontend sync).
-      The deploy path (environment credentials, CloudFormation execution role) is verified with a
-      local run; the first GitHub-hosted run is pending.
+      Verified on GitHub: a push to `main` passes all checks and deploys through OIDC.
       GitHub Actions is free for public repos and has 2,000 free minutes/month for private ones.
 - [ ] $1 monthly budget in IaC (the zero-spend budget already exists); tags everywhere;
       `make destroy` tested end-to-end. Budget, alarms and measured usage are in [`docs/cost.md`](docs/cost.md);
@@ -342,7 +341,7 @@ CloudFront, sign-in and web app are verified live.
 
 ### Phase 7: Portfolio polish and demo (2 days)
 - [ ] README: problem, architecture diagram, deliverables table, screenshots, tech stack,
-      how to deploy, cost proof, lessons learned.
+      how to deploy, cost proof, lessons learned. Done except screenshots and lessons learned.
 - [ ] `docs/demo-script.md` (section 13) and `docs/retrospective.md`.
 - [ ] Short screen recording / GIF of the app for the portfolio.
 
