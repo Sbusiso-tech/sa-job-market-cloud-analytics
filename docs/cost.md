@@ -4,7 +4,9 @@ The platform is designed to cost **$0.00 a month**. Every service runs inside th
 (for API Gateway and S3) inside the 12-month free tier / Free-plan credits. This page shows the limits it was
 designed against and the usage measured on the live deployment.
 
-**Measured spend: $0.00.** Both AWS Budgets report $0.00 actual spend for October 2026 (as of 14 October).
+**Measured spend: $0.00.** The October 2026 bill is USD 0.00 (as of 20 October), and both AWS Budgets report $0.00 actual spend.
+
+![October 2026 bill at USD 0.00](images/billing-october.png)
 
 ## Guardrails
 

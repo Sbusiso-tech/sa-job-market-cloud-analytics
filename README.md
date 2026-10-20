@@ -219,8 +219,10 @@ For automatic deploys from GitHub, run `make bootstrap-oidc` once, then add the 
 ## Cost
 
 Running cost is **$0.00 a month**. All services stay inside the AWS always-free allowances (or the 12-month free
-tier for API Gateway and S3), with a zero-spend budget and a $1 budget as guardrails. Measured usage against each
-free limit is in [docs/cost.md](docs/cost.md).
+tier for API Gateway and S3), with a zero-spend budget and a $1 budget as guardrails. The October 2026 bill is
+USD 0.00, and measured usage against each free limit is in [docs/cost.md](docs/cost.md).
+
+![October 2026 AWS bill at USD 0.00](docs/images/billing-october.png)
 
 ## Repository layout
 
