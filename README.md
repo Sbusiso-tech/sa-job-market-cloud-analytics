@@ -260,4 +260,6 @@ real account, and what changed because of them, are in [docs/retrospective.md](d
 
 ## Author
 
-**Sbusiso Shinga**, WeThinkCode_ Cloud Computing (AWS) capstone, 2026.
+**Sbusiso Shinga**, WeThinkCode_ Cloud Computing (AWS), 2026.
+
+WTC-AKUZ89DZ
