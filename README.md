@@ -249,9 +249,14 @@ frontend/src/           React web app (pages, API client, Cognito auth, mock mod
 infra/template.yaml     the whole AWS stack (SAM)
 infra/statemachine/     Step Functions workflow
 infra/bootstrap/        one-time GitHub OIDC deployment roles
-docs/                   API contract and cost report
+docs/                   API contract, cost report, demo script, retrospective
 .github/workflows/      CI/CD
 ```
+
+## Demo and lessons
+
+The 12-minute walkthrough is in [docs/demo-script.md](docs/demo-script.md). The bugs that showed up on the
+real account, and what changed because of them, are in [docs/retrospective.md](docs/retrospective.md).
 
 ## Author
 

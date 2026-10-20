@@ -340,9 +340,9 @@ CloudFront, sign-in and web app are verified live.
 - **Done when:** a merge to `main` deploys automatically with no stored AWS keys.
 
 ### Phase 7: Portfolio polish and demo (2 days)
-- [ ] README: problem, architecture diagram, deliverables table, screenshots, tech stack,
-      how to deploy, cost proof, lessons learned. Done except screenshots and lessons learned.
-- [ ] `docs/demo-script.md` (section 13) and `docs/retrospective.md`.
+- [x] README: problem, architecture diagram, deliverables table, screenshots, tech stack,
+      how to deploy, cost proof, lessons learned.
+- [x] `docs/demo-script.md` (section 13) and `docs/retrospective.md`.
 - [ ] Short screen recording / GIF of the app for the portfolio. Public pages are in the README;
       a signed-in walkthrough (alerts, admin, an alert email) is still to record.
 
