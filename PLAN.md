@@ -343,7 +343,8 @@ CloudFront, sign-in and web app are verified live.
 - [ ] README: problem, architecture diagram, deliverables table, screenshots, tech stack,
       how to deploy, cost proof, lessons learned. Done except screenshots and lessons learned.
 - [ ] `docs/demo-script.md` (section 13) and `docs/retrospective.md`.
-- [ ] Short screen recording / GIF of the app for the portfolio.
+- [ ] Short screen recording / GIF of the app for the portfolio. Public pages are in the README;
+      a signed-in walkthrough (alerts, admin, an alert email) is still to record.
 
 Rough total: **~3 weeks** of part-time work.
 

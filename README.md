@@ -33,6 +33,21 @@ demand per province, and common skill combinations.
 - **Daily pipeline:** collects up to 40 pages of South African tech jobs from the Adzuna API every morning, cleans
   them, extracts skills, converts salaries to rand per year and maps each job to one of the 9 provinces.
 
+## Screenshots
+
+The live dashboard, 20 October 2026: 10,232 postings in the last 30 days, a median salary of R510,000 and DevOps
+as the most requested skill.
+
+![Tour of the dashboard, provinces, job list and a job](docs/images/tour.gif)
+
+![Dashboard with headline numbers, top skills and salary ranges](docs/images/dashboard.png)
+
+![Jobs and median salaries by province](docs/images/provinces.png)
+
+![Jobs filtered to Python](docs/images/jobs.png)
+
+![A job with its salary, province and skills](docs/images/job-detail.png)
+
 ## Architecture
 
 ```mermaid
