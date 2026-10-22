@@ -136,20 +136,6 @@ user one digest through SNS.
 The full design is in [PLAN.md](PLAN.md), and every API route is specified in
 [docs/api-contract.md](docs/api-contract.md).
 
-## Capstone deliverables
-
-| Deliverable | How it is met |
-|---|---|
-| Authenticated backend API: **API Gateway** | HTTP API under `/api/*` with a Cognito JWT authorizer and throttling (10 requests/s, burst 20) |
-| Authenticated backend API: **Lambda** | 8 Python 3.12 (arm64) functions: public, user and admin APIs; ingest, process, aggregate, pipeline status, alert matcher |
-| Authenticated backend API: **DynamoDB** | Single-table design with two global secondary indexes, a stream and TTL |
-| Authenticated backend API: **Cognito** | User pool with email sign-up, verified email, strong passwords and an `admins` group |
-| **Infrastructure as Code** | Everything is in AWS SAM ([`infra/template.yaml`](infra/template.yaml)); `make deploy` creates it and `make destroy` removes it |
-| **Web app on S3 + CloudFront** | React app in a private S3 bucket, served only through CloudFront with Origin Access Control |
-| **Asynchronous services** | EventBridge Scheduler → Step Functions → SQS (with dead-letter queue) → Lambda; DynamoDB Streams → alert matcher |
-| **Notifications** | SNS email digests to users for matching jobs; CloudWatch alarms email the admin about failures |
-| **Secure access control** | User and admin roles, one least-privilege IAM role per function, private encrypted S3, secrets in SSM Parameter Store, HTTPS only, CSP and HSTS headers |
-| **CI/CD** (extra) | GitHub Actions: lint, tests and build on every pull request; automatic deploy from `main` using OIDC, with no stored AWS keys |
 
 ## Security
 
